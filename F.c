@@ -1,163 +1,80 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <math.h>
 typedef struct node
 {
-	int v;
+	int data;
 	struct node *next;
-	struct node *prev;
 }node;
-node *c(int x)
-{
-	node *value=(node *)malloc(sizeof(node));
-	value->prev=NULL;
-	value->v=x;
-	value->next=NULL;
-	return value;
-}
-node *head1=NULL,*head2=NULL,*head3=NULL;
+#define N 1000006
+char a[N], b[N];
 int main()
 {
-	int x;node *temp1,*temp2,*temp,*temp3,*temp4; int count1=0,count2=0;
-	do
+	scanf("%s", a);
+	scanf("%s", b);
+	int len1 = strlen(a), len2 = strlen(b), c = 0;
+	node *head1, *head2, *head3;
+	head1 = (node *)malloc(sizeof(node));
+	head2 = (node *)malloc(sizeof(node));
+	head3 = (node *)malloc(sizeof(node));
+	head1->data = 1e6 + 7, head2->data = 1e6 + 7, head3->data = 1e6 + 7;
+	head1->next = NULL, head2->next = NULL, head3->next = NULL;
+	node *temp1 = head1, *temp2 = head2, *temp3 = head3, *temp;
+	for(int i = len1 - 1; i >= 0; i--)
 	{
-		scanf("%d",&x);
-		if(head1==NULL)
-		{
-			head1=c(x);
-			temp1=head1;
-			count1++;
-		}
-		else
-		{
-			temp1->next=c(x);
-			temp1->next->prev=temp1;
-			temp1=temp1->next;
-			count1++;
-		}
-	}while(getchar()!=10);
-	do
-	{
-		scanf("%d",&x);
-		if(head2==NULL)
-		{
-			head2=c(x);
-			temp2=head2;
-		}
-		else
-		{
-			temp2->next=c(x);
-			temp2->next->prev=temp2;
-			temp2=temp2->next;
-
-		}
-	}while(getchar()!=10);
-	/*temp1=head1;
-	while(temp1!=NULL)
-	{
-		printf("%d ",temp1->v);
-		temp1=temp1->next;
+		node *value;
+		value = (node *)malloc(sizeof(node));
+		value->data = a[i] - '0';
+		value->next = NULL;
+		temp1->next = value;
+		temp1 = temp1->next;
 	}
-	printf("\n");
-	temp2=head2;
-	while(temp2!=NULL)
+	for(int i = len2 - 1; i >= 0; i--)
 	{
-		printf("%d ",temp2->v);
-		temp2=temp2->next;
+		node *value;
+		value = (node *)malloc(sizeof(node));
+		value->data = b[i] - '0';
+		value->next = NULL;
+		temp2->next = value;
+		temp2 = temp2->next;
 	}
-	printf("\n");*/
-	/*int count=count1+count2;
-	while((count1+count2)>0)
+	if (len1 > len2) temp = temp2;
+	else temp = temp1;
+	for(int i = 0; i < abs(len1 - len2); i++)
 	{
-		if(count1>0)
-	{
-		while(((temp1->v<temp2->v||count2==0)&&temp1!=NULL))
-		{
-			temp1=temp1->next;
-		}
-		temp=temp3;
-		while(temp!=temp1&&count1>0)
-		{
-			count1--;
-			printf("%d ",temp->v);
-			temp=temp->next;
-
-		}
-		temp3=temp;
+		node *value;
+		value = (node *)malloc(sizeof(node));
+		value->data = 0;
+		value->next = NULL;
+		temp->next = value;
+		temp = temp->next;
 	}
-	if(count2>0)
+	temp1 = head1->next, temp2 = head2->next;
+	while(temp1 != NULL)
 	{
-		while(((temp2->v<temp1->v||count1==0)&&temp2!=NULL))
-		{
-			temp2=temp2->next;
-		}
-		temp=temp4;
-		while(temp!=temp2&&count2>0)
-		{
-			count2--;
-			printf("%d ",temp->v);
-			temp=temp->next;
-		}
-		temp4=temp;
+		int sum = temp1->data ^ temp2->data ^ c;
+		c = (temp1->data & temp2->data) | (temp2->data & c) | (c & temp1->data);
+		node *value;
+		value = (node *)malloc(sizeof(node));
+		value->data = sum;
+		value->next = NULL;
+		temp3->next = value;
+		temp1 = temp1->next, temp2 = temp2->next, temp3 = temp3->next;
 	}
-
-	}*/
-	temp1=head1;temp2=head2;
-	while(temp1!=NULL && temp2!=NULL)
+	temp3 = head3->next, head3 = NULL;
+	while(temp3 != NULL)
 	{
-		if(temp1->v<=temp2->v)
-		{
-				if(head3==NULL)
-			{
-				head3=c(temp1->v);
-				temp3=head3;
-				
-			}
-			else
-			{
-				temp3->next=c(temp1->v);
-				temp3->next->prev=temp3;
-				temp3=temp3->next;
-			}	
-			temp1=temp1->next;
-		}
-		else
-		{
-				if(head3==NULL)
-			{
-				head3=c(temp2->v);
-				temp3=head3;
-				
-			}
-			else
-			{
-				temp3->next=c(temp2->v);
-				temp3->next->prev=temp3;
-				temp3=temp3->next;
-
-			}	
-			temp2=temp2->next;
-		}
+		temp = temp3->next;
+		temp3->next = head3;
+		head3 = temp3;
+		temp3 = temp;
 	}
-	while(temp1!=NULL)
+	temp3 = head3;
+	if (c) printf("%d", c);
+	while(temp3 != NULL)
 	{
-		temp3->next=c(temp1->v);
-				temp3->next->prev=temp3;
-				temp3=temp3->next;
-				temp1=temp1->next;
+		printf("%d", temp3->data);
+		temp3 = temp3->next;
 	}
-	while(temp2!=NULL)
-	{
-		temp3->next=c(temp2->v);
-				temp3->next->prev=temp3;
-				temp3=temp3->next;
-				temp2=temp2->next;
-	}
-	temp3=head3;
-	while(temp3!=NULL)
-	{
-		printf("%d ",temp3->v);
-		temp3=temp3->next;
-	}
-	printf("\n");
 }
